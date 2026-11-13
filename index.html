@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>padhai — your study space</title>
+<style>
+:root{--ink:#20233a;--muted:#7d8199;--line:#ececf3;--paper:#fff;--canvas:#f7f8fc;--soft:#fafafe;--purple:#7164e8;--pd:#5c50cf;--lav:#f0efff;--mint:#e6f7ee;--peach:#fff0e8;--yellow:#fff6d8;color-scheme:light;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--ink:#eceefa;--muted:#9a9eb8;--line:#2c2e45;--paper:#1c1d2e;--canvas:#13141f;--soft:#232538;--lav:#2b2850;--mint:#1f3a2c;--peach:#40291f;--yellow:#40371a;--pd:#b0a8ff;color-scheme:dark}}
+:root[data-theme="dark"]{--ink:#eceefa;--muted:#9a9eb8;--line:#2c2e45;--paper:#1c1d2e;--canvas:#13141f;--soft:#232538;--lav:#2b2850;--mint:#1f3a2c;--peach:#40291f;--yellow:#40371a;--pd:#b0a8ff;color-scheme:dark}
+*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;min-width:320px;background:var(--canvas);color:var(--ink)}
+button,input,select{font:inherit;color:inherit}button{cursor:pointer}
+.sidebar{position:fixed;inset:0 auto 0 0;z-index:5;display:flex;width:232px;flex-direction:column;padding:calc(26px + env(safe-area-inset-top,0px)) 16px 20px;background:var(--paper);border-right:1px solid var(--line)}
+.brand{display:flex;align-items:center;gap:10px;padding:0 10px;font-size:21px;font-weight:800;letter-spacing:-.8px}
+.mark{display:grid;width:34px;height:34px;place-items:center;border-radius:12px;background:var(--purple);color:#fff;font-size:18px}
+.brand small{display:block;color:var(--muted);font-size:10px;font-weight:600;letter-spacing:.5px}
+.nav{display:grid;gap:5px;margin-top:34px}
+.nav button{display:flex;align-items:center;gap:12px;width:100%;padding:11px 13px;border:0;border-radius:11px;background:none;color:var(--muted);text-align:left;font-size:13px;font-weight:650}
+.nav button.active,.nav button:hover{background:var(--lav);color:var(--pd)}
+.side-note{margin-top:auto;padding:16px;border-radius:16px;background:var(--lav);font-size:11px;line-height:1.5;color:var(--muted)}
+.side-note b{display:block;margin-bottom:4px;color:var(--ink);font-size:13px}
+.side-note button{width:100%;margin-top:10px;padding:9px;border:0;border-radius:9px;background:var(--purple);color:#fff;font-size:11px;font-weight:700}
+main{margin-left:232px;padding:calc(28px + env(safe-area-inset-top,0px)) clamp(20px,4vw,56px) 56px;max-width:1300px}
+h1{margin:0;font-size:clamp(24px,3vw,32px);letter-spacing:-1.2px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.pill{padding:9px 13px;border:1px solid var(--line);border-radius:11px;background:var(--paper);color:var(--muted);font-size:11px;font-weight:600}
+.sub{margin:6px 0 22px;color:var(--muted);font-size:13px}
+.hero{position:relative;display:flex;align-items:center;justify-content:space-between;overflow:hidden;padding:28px 32px;border-radius:20px;background:linear-gradient(112deg,#7164e8,#9a8bf1);color:#fff;box-shadow:0 13px 26px #7164e82a}
+.hero h2{margin:0;font-size:clamp(20px,2.4vw,27px);letter-spacing:-.7px}
+.hero p{margin:8px 0 16px;font-size:13px;color:#eeecff}
+.hero button{padding:10px 15px;border:0;border-radius:9px;background:#fff;color:#5c50cf;font-size:12px;font-weight:750}
+.hero .big{font-size:64px;opacity:.9}
+.sh{margin:28px 0 12px;font-size:16px;font-weight:750}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.card{display:flex;align-items:center;gap:13px;padding:16px;border:1px solid var(--line);border-radius:15px;background:var(--paper)}
+.ico{display:grid;width:40px;height:40px;flex:0 0 40px;place-items:center;border-radius:12px;font-size:18px;background:var(--lav)}
+.card small{display:block;color:var(--muted);font-size:11px;font-weight:600}
+.card strong{font-size:20px;letter-spacing:-.5px}.card .u{margin-left:3px;color:var(--muted);font-size:11px;font-weight:500}
+.grid{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(260px,1fr);gap:16px;margin-top:18px}
+.panel{padding:20px;border:1px solid var(--line);border-radius:16px;background:var(--paper)}
+.ph{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.ph h2{margin:0;font-size:15px}.ph span{color:var(--muted);font-size:11px}
+.tasks{display:grid;gap:8px}
+.task{display:flex;align-items:center;gap:10px;min-height:46px;padding:8px 10px;border-radius:10px;background:var(--soft)}
+.task input{width:17px;height:17px;margin:0;accent-color:var(--purple)}
+.tt{flex:1;font-size:12px;font-weight:650;word-break:break-word}
+.task.done .tt{color:var(--muted);text-decoration:line-through}
+.tag{padding:4px 7px;border-radius:6px;background:var(--lav);color:var(--pd);font-size:10px;font-weight:700}
+.tag.green{background:var(--mint);color:#49946a}.tag.orange{background:var(--peach);color:#ca8060}.tag.yellow{background:var(--yellow);color:#b58a1c}
+.del{border:0;background:none;color:var(--muted);font-size:16px;padding:2px 6px}
+.add{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.add input,.add select,.ask input{padding:10px 11px;border:1px solid var(--line);border-radius:9px;background:var(--paper);font-size:12px;outline:none}
+.add input{flex:1;min-width:140px}
+.add input:focus,.ask input:focus{border-color:var(--purple)}
+.btn{padding:10px 14px;border:0;border-radius:9px;background:var(--purple);color:#fff;font-size:12px;font-weight:700}
+.btn.alt{background:var(--lav);color:var(--pd)}.btn:disabled{opacity:.6;cursor:wait}
+.timer{display:flex;flex-direction:column;align-items:center;text-align:center}
+.modes{display:flex;gap:4px;padding:4px;border-radius:9px;background:var(--soft)}
+.modes button{padding:6px 10px;border:0;border-radius:6px;background:none;color:var(--muted);font-size:10px;font-weight:650}
+.modes button.sel{background:var(--paper);color:var(--pd)}
+.ring{display:grid;width:150px;height:150px;place-items:center;margin:14px 0;border-radius:50%;background:conic-gradient(var(--purple) 0deg,var(--lav) 0deg)}
+.ri{display:grid;width:130px;height:130px;align-content:center;border-radius:50%;background:var(--paper)}
+.tm{font-size:32px;font-weight:750;font-variant-numeric:tabular-nums;letter-spacing:-1px}.cap{color:var(--muted);font-size:10px}
+.ctl{display:flex;gap:8px}
+.bottom{display:grid;grid-template-columns:1fr 1.2fr;gap:16px;margin-top:16px}
+.srow{display:grid;grid-template-columns:30px 70px 1fr 36px;align-items:center;gap:9px;margin-bottom:13px}
+.si{display:grid;width:30px;height:30px;place-items:center;border-radius:9px;background:var(--lav)}
+.sn{font-size:11px;font-weight:700}.bar{height:7px;overflow:hidden;border-radius:7px;background:var(--soft)}.bar i{display:block;height:100%;background:var(--purple)}
+.sp{font-size:10px;color:var(--muted);text-align:right}
+.chat{display:flex;flex-direction:column;gap:9px;max-height:340px;overflow-y:auto;margin-bottom:10px}
+.msg{padding:10px 12px;border-radius:12px;font-size:12px;line-height:1.6;white-space:pre-wrap;word-break:break-word;max-width:92%}
+.msg.u{align-self:flex-end;background:var(--purple);color:#fff}.msg.a{align-self:flex-start;background:var(--soft)}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.chips button{padding:6px 10px;border:1px solid var(--line);border-radius:20px;background:var(--paper);color:var(--pd);font-size:10px;font-weight:650}
+.ask{display:flex;gap:7px}.ask input{flex:1;min-width:0}
+.empty{padding:12px;color:var(--muted);font-size:12px;text-align:center}
+.toast{position:fixed;right:20px;bottom:calc(20px + env(safe-area-inset-bottom,0px));z-index:10;padding:12px 16px;border-radius:10px;background:#27283c;color:#fff;font-size:12px;opacity:0;pointer-events:none;transition:.2s}.toast.show{opacity:1}
+@media(max-width:1000px){.stats{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:740px){
+.sidebar{inset:auto 0 0;width:100%;height:calc(64px + env(safe-area-inset-bottom,0px));flex-direction:row;padding:5px 8px calc(5px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--line);border-right:0}
+.brand,.side-note{display:none}.nav{display:flex;width:100%;margin:0;justify-content:space-around}
+.nav button{flex-direction:column;gap:2px;width:auto;padding:6px 8px;font-size:10px}
+main{margin:0;padding:calc(20px + env(safe-area-inset-top,0px)) 16px 100px}
+.grid,.bottom{grid-template-columns:1fr}.hero .big{display:none}.hero{padding:22px}
+.pill{display:none}.toast{left:16px;right:16px;bottom:calc(80px + env(safe-area-inset-bottom,0px))}}
+</style>
+</head>
+<body>
+<aside class="sidebar">
+  <div class="brand"><span class="mark">✦</span><span>padhai<small>YOUR STUDY SPACE</small></span></div>
+  <nav class="nav">
+    <button class="active" data-t="home">⌂ Home</button>
+    <button data-t="tasks">▤ Tasks</button>
+    <button data-t="focus">◷ Focus</button>
+    <button data-t="subjects">▧ Subjects</button>
+    <button data-t="assistant">✧ AI buddy</button>
+  </nav>
+  <div class="side-note"><b>Study smarter ✨</b>Ask the AI buddy to explain, quiz or plan your day.<button data-t="assistant">Ask now</button></div>
+</aside>
+
+<main id="home">
+  <div class="top"><div><h1 id="greet">Hello, champ</h1><p class="sub">Plan, focus, and learn with a real AI study buddy.</p></div><div class="pill" id="date"></div></div>
+
+  <section class="hero">
+    <div><h2>Small progress is still progress.</h2><p>One focused session at a time — let’s make today count.</p><button data-t="focus">Start a focus session →</button></div>
+    <div class="big">📚</div>
+  </section>
+
+  <h2 class="sh">Your progress</h2>
+  <section class="stats">
+    <div class="card"><div class="ico">◷</div><div><small>Focus today</small><strong id="s-min">0</strong><span class="u">min</span></div></div>
+    <div class="card"><div class="ico" style="background:var(--mint)">✓</div><div><small>Tasks done</small><strong id="s-task">0</strong><span class="u" id="s-total">/ 0</span></div></div>
+    <div class="card"><div class="ico" style="background:var(--peach)">♨</div><div><small>Day streak</small><strong id="s-streak">0</strong><span class="u">days</span></div></div>
+    <div class="card"><div class="ico" style="background:var(--yellow)">◎</div><div><small>This week (goal 8h)</small><strong id="s-week">0</strong><span class="u">hrs</span></div></div>
+  </section>
+
+  <section class="grid">
+    <article class="panel" id="tasks">
+      <div class="ph"><h2>Today’s tasks</h2><span id="t-count"></span></div>
+      <div class="tasks" id="task-list"></div>
+      <form class="add" id="add-form">
+        <input id="new-task" placeholder="Add a task…" maxlength="80" required aria-label="New task">
+        <select id="new-sub" aria-label="Subject"></select>
+        <button class="btn" type="submit">＋ Add</button>
+      </form>
+    </article>
+    <article class="panel timer" id="focus">
+      <div class="ph" style="width:100%"><h2>Focus timer</h2><span>Stay in the zone</span></div>
+      <div class="modes"><button class="sel" data-m="25">Focus</button><button data-m="5">Short break</button><button data-m="15">Long break</button></div>
+      <div class="ring" id="ring"><div class="ri"><div class="tm" id="tm">25:00</div><div class="cap" id="cap">Ready when you’re</div></div></div>
+      <div class="ctl"><button class="btn" id="toggle">Start focus</button><button class="btn alt" id="reset">↺ Reset</button></div>
+    </article>
+  </section>
+
+  <section class="bottom">
+    <article class="panel" id="subjects">
+      <div class="ph"><h2>Subject progress</h2><span>done / planned</span></div>
+      <div id="sub-list"></div>
+    </article>
+    <article class="panel" id="assistant">
+      <div class="ph"><h2>AI study buddy</h2><span>Powered by Gemini</span></div>
+      <div class="chat" id="chat"><div class="msg a">Hi! Ask me anything — I can explain topics simply, quiz you, make a study plan or give revision tips. Hindi ya English, jaise comfortable ho. 😊</div></div>
+      <div class="chips" id="chips"></div>
+      <form class="ask" id="ask-form"><input id="q" placeholder="e.g. Explain photosynthesis simply…" maxlength="400" required aria-label="Ask your study buddy"><button class="btn" id="send" type="submit">➜</button></form>
+      <div style="margin-top:8px;display:flex;justify-content:space-between"><span class="cap" id="ai-status"></span><button class="btn alt" id="clear" type="button" style="padding:5px 10px;font-size:10px">Clear chat</button></div>
+    </article>
+  </section>
+</main>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+const $=id=>document.getElementById(id);
+const SUBJECTS=[{id:"biology",name:"Biology",icon:"🧬",cls:"green"},{id:"math",name:"Math",icon:"📐",cls:""},{id:"history",name:"History",icon:"📜",cls:"orange"},{id:"english",name:"English",icon:"📖",cls:"yellow"}];
+const DEFAULTS=[{title:"Revise photosynthesis notes",subject:"biology",done:false},{title:"Practice quadratic equations",subject:"math",done:false},{title:"Read chapter 4 summary",subject:"history",done:false},{title:"Review vocabulary flashcards",subject:"english",done:false}];
+const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch{return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch{}}};
+let tasks=store.get("padhai-tasks",DEFAULTS);
+if(!Array.isArray(tasks))tasks=DEFAULTS;
+let log=store.get("padhai-log",{});
+const dayKey=d=>{const x=new Date(d);return x.getFullYear()+"-"+String(x.getMonth()+1).padStart(2,"0")+"-"+String(x.getDate()).padStart(2,"0")};
+let toastT;function toast(m){$("toast").textContent=m;$("toast").classList.add("show");clearTimeout(toastT);toastT=setTimeout(()=>$("toast").classList.remove("show"),2400)}
+
+SUBJECTS.forEach(s=>{const o=document.createElement("option");o.value=s.id;o.textContent=s.name;$("new-sub").append(o)});
+
+function renderTasks(){
+  const list=$("task-list");list.replaceChildren();
+  if(!tasks.length){const e=document.createElement("div");e.className="empty";e.textContent="No tasks yet — add your first one below.";list.append(e)}
+  tasks.forEach((t,i)=>{
+    const s=SUBJECTS.find(x=>x.id===t.subject)||SUBJECTS[0];
+    const row=document.createElement("label");row.className="task"+(t.done?" done":"");
+    const cb=document.createElement("input");cb.type="checkbox";cb.checked=!!t.done;
+    cb.onchange=()=>{t.done=cb.checked;save();renderAll()};
+    const tt=document.createElement("span");tt.className="tt";tt.textContent=t.title;
+    const tag=document.createElement("span");tag.className="tag "+s.cls;tag.textContent=s.name;
+    const del=document.createElement("button");del.type="button";del.className="del";del.textContent="×";del.setAttribute("aria-label","Delete task");
+    del.onclick=e=>{e.preventDefault();tasks.splice(i,1);save();renderAll()};
+    row.append(cb,tt,tag,del);list.append(row);
+  });
+}
+function renderStats(){
+  const done=tasks.filter(t=>t.done).length;
+  $("s-task").textContent=done;$("s-total").textContent="/ "+tasks.length;
+  $("t-count").textContent=tasks.length+" task"+(tasks.length===1?"":"s");
+  const today=log[dayKey(Date.now())]||0;$("s-min").textContent=today;
+  let week=0;for(let i=0;i<7;i++)week+=log[dayKey(Date.now()-i*864e5)]||0;
+  $("s-week").textContent=(week/60).toFixed(1);
+  let streak=0,i=today>0?0:1;while((log[dayKey(Date.now()-i*864e5)]||0)>0){streak++;i++}
+  $("s-streak").textContent=streak;
+  const sl=$("sub-list");sl.replaceChildren();
+  SUBJECTS.forEach(s=>{
+    const st=tasks.filter(t=>t.subject===s.id),d=st.filter(t=>t.done).length,p=st.length?Math.round(d/st.length*100):0;
+    const r=document.createElement("div");r.className="srow";
+    const ic=document.createElement("span");ic.className="si";ic.textContent=s.icon;
+    const n=document.createElement("span");n.className="sn";n.textContent=s.name;
+    const b=document.createElement("div");b.className="bar";const f=document.createElement("i");f.style.width=p+"%";b.append(f);
+    const c=document.createElement("span");c.className="sp";c.textContent=d+"/"+st.length;
+    r.append(ic,n,b,c);sl.append(r);
+  });
+}
+function save(){store.set("padhai-tasks",tasks)}
+function renderAll(){renderTasks();renderStats()}
+$("add-form").onsubmit=e=>{e.preventDefault();const v=$("new-task").value.trim();if(!v)return;tasks.push({title:v,subject:$("new-sub").value,done:false});$("new-task").value="";save();renderAll();toast("Task added ✨")};
+
+/* Timer */
+let mins=25,left=1500,iv=null,focusSec=0;
+function renderTimer(){
+  $("tm").textContent=String(Math.floor(left/60)).padStart(2,"0")+":"+String(left%60).padStart(2,"0");
+  const deg=360*(1-left/(mins*60));$("ring").style.background=`conic-gradient(var(--purple) ${deg}deg,var(--lav) ${deg}deg)`;
+}
+function stop(msg){clearInterval(iv);iv=null;$("toggle").textContent=mins===25?"Start focus":"Start break";$("cap").textContent=msg||"Paused"}
+document.querySelectorAll(".modes button").forEach(b=>b.onclick=()=>{stop("Ready when you’re");document.querySelectorAll(".modes button").forEach(x=>x.classList.remove("sel"));b.classList.add("sel");mins=+b.dataset.m;left=mins*60;focusSec=0;$("toggle").textContent=mins===25?"Start focus":"Start break";renderTimer()});
+$("toggle").onclick=()=>{
+  if(iv){stop();return}
+  $("cap").textContent="You’re doing great";$("toggle").textContent="Pause";
+  iv=setInterval(()=>{
+    left--;
+    if(mins===25){focusSec++;if(focusSec%60===0){const k=dayKey(Date.now());log[k]=(log[k]||0)+1;store.set("padhai-log",log);renderStats()}}
+    if(left<=0){left=0;stop("Session complete! 🎉");toast("Lovely work — session complete! 🎉")}
+    renderTimer();
+  },1000);
+};
+$("reset").onclick=()=>{stop("Ready when you’re");left=mins*60;focusSec=0;renderTimer()};
+
+/* AI buddy (Claude) */
+const CHIPS=["Explain photosynthesis simply","Quiz me on quadratic equations","Make a 2-hour study plan","Tips to remember history dates"];
+CHIPS.forEach(c=>{const b=document.createElement("button");b.type="button";b.textContent=c;b.onclick=()=>{$("q").value=c;$("ask-form").requestSubmit()};$("chips").append(b)});
+let history=[],sample=null,busy=false;
+function addMsg(cls,text){const m=document.createElement("div");m.className="msg "+cls;m.textContent=text;$("chat").append(m);$("chat").scrollTop=$("chat").scrollHeight;return m}
+function initAI(){sample=true;$("ai-status").textContent="AI ready"}
+$("ask-form").onsubmit=async e=>{
+  e.preventDefault();if(busy)return;
+  const q=$("q").value.trim();if(!q)return;
+  if(!sample){toast("AI buddy isn’t available in this view.");return}
+  busy=true;$("send").disabled=true;$("q").value="";
+  addMsg("u",q);const out=addMsg("a","Thinking…");
+  const ctx=tasks.length?tasks.map(t=>t.title+" ("+t.subject+(t.done?", done":"")+")").join("; "):"none";
+  try{
+    const r=await fetch("/api/chat",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({message:q,history:history.slice(-8),tasks:ctx})});
+    const data=await r.json().catch(()=>({}));
+    if(!r.ok)throw new Error(data.error||("Server error "+r.status+(r.status===404?" — api/chat.js nahi mili (repo root me api folder check karo)":r.status===500?" — function crash, Vercel Logs dekho":"")));
+    const ans=(data.answer||"").trim()||"I couldn’t come up with an answer — please try again.";
+    out.textContent=ans;history.push({role:"user",content:q},{role:"assistant",content:ans});
+  }catch(err){
+    out.textContent=err instanceof TypeError?"Server se connect nahi ho paya. Internet check karke dobara try karo.":(err.message||"Something went wrong.");
+  }finally{busy=false;$("send").disabled=false}
+};
+$("clear").onclick=()=>{history=[];$("chat").replaceChildren();addMsg("a","Chat cleared. What shall we learn next?")};
+
+document.querySelectorAll("[data-t]").forEach(b=>b.onclick=()=>{
+  const t=$(b.dataset.t);if(t)t.scrollIntoView({behavior:"smooth",block:"start"});
+  if(b.closest(".nav")){document.querySelectorAll(".nav button").forEach(x=>x.classList.remove("active"));b.classList.add("active")}
+});
+const now=new Date(),h=now.getHours();
+$("date").textContent=now.toLocaleDateString("en-IN",{weekday:"short",day:"numeric",month:"short"});
+$("greet").textContent=(h<12?"Good morning":h<17?"Good afternoon":"Good evening")+", champ "+(h<17?"☀️":"🌙");
+renderAll();renderTimer();initAI();
+</script>
+</body>
+</html>
