@@ -1,0 +1,39 @@
+// Vercel serverless function. API key lives ONLY in env var GEMINI_API_KEY.
+const SYSTEM = `You are "Padhai Buddy", a friendly, accurate study assistant inside a student study app. Reply in the same language the student uses (Hindi, Hinglish or English). Be correct first: if unsure, say so. Explain simply with a short real-life example, then a 1-line recap. For quiz requests, ask 3 questions and give answers only after the student replies. Keep answers under 180 words unless asked for more. Use plain text only: no markdown symbols like ** or #; use simple "-" lines for lists.`;
+
+module.exports = async (req, res) => {
+  if (req.method !== "POST") return res.status(405).json({ error: "Use POST" });
+  const key = process.env.GEMINI_API_KEY;
+  if (!key) return res.status(500).json({ error: "Server me GEMINI_API_KEY set nahi hai." });
+
+  let body = req.body;
+  if (typeof body === "string") { try { body = JSON.parse(body); } catch { body = {}; } }
+  const message = String((body && body.message) || "").trim().slice(0, 500);
+  if (!message) return res.status(400).json({ error: "Empty message" });
+  const tasks = String((body && body.tasks) || "").slice(0, 600);
+  const history = Array.isArray(body.history) ? body.history.slice(-8) : [];
+
+  const contents = history
+    .filter(m => m && typeof m.content === "string")
+    .map(m => ({ role: m.role === "assistant" ? "model" : "user", parts: [{ text: m.content.slice(0, 1500) }] }));
+  contents.push({ role: "user", parts: [{ text: message }] });
+
+  const model = process.env.GEMINI_MODEL || "gemini-2.5-flash";
+  try {
+    const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "x-goog-api-key": key },
+      body: JSON.stringify({
+        systemInstruction: { parts: [{ text: SYSTEM + " Student's tasks today: " + (tasks || "none") + "." }] },
+        contents,
+        generationConfig: { temperature: 0.5, maxOutputTokens: 800 }
+      })
+    });
+    const data = await r.json();
+    if (!r.ok) return res.status(502).json({ error: (data.error && data.error.message) || "Gemini error" });
+    const answer = (data.candidates?.[0]?.content?.parts || []).map(p => p.text || "").join("").trim();
+    return res.status(200).json({ answer });
+  } catch (e) {
+    return res.status(502).json({ error: "AI server se jawab nahi mila." });
+  }
+};
